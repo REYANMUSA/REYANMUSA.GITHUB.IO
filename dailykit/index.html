@@ -76,7 +76,15 @@
     .sponsor small{color:var(--muted)}
     .footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0 10px;color:var(--muted);font-size:12px}
     .footerline{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
-    .toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:white;padding:11px 14px;border-radius:12px;font-weight:700;transition:.2s;z-index:50}
+    .modal{position:fixed;inset:0;background:rgba(20,25,20,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
+    .modal.open{display:flex}
+    .modal-card{width:min(520px,100%);max-height:88vh;overflow:auto;background:white;border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 28px 80px rgba(20,25,20,.2)}
+    .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:14px}
+    .modal-head h2{margin:9px 0 0}
+    .close{width:36px;height:36px;border:1px solid var(--line);background:#f7f7f4;border-radius:11px;font-size:22px;line-height:1}
+    .big-result{font-size:28px;letter-spacing:-.04em;padding:18px;background:var(--accent-2);border-radius:16px;margin-top:12px;font-weight:850}
+    .timer-display{text-align:center;font-size:72px;letter-spacing:-.07em;font-variant-numeric:tabular-nums;margin:10px 0 18px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:white;padding:11px 14px;border-radius:12px;font-weight:700;transition:.2s;z-index:50}
     .toast.show{transform:translate(-50%,0);opacity:1}
     @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:600px){
@@ -226,6 +234,13 @@
     </div>
   </main>
 
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-head"><div><span class="badge" id="modalBadge">DailyKit tool</span><h2 id="modalTitle">Tool</h2></div><button class="close" id="closeModal" aria-label="Close">×</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -269,18 +284,113 @@
       else toast('Tool ready — this demo keeps the core experience simple.');
     });
 
-    function startTimer(){
-      let left=25*60; toast('25-minute focus started.');
-      const interval=setInterval(()=>{ left--; if(left<=0){clearInterval(interval);toast('Focus session complete.');} },1000);
-    }
-    function showTime(){
-      const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||'your local zone';
-      toast('Your timezone: '+zone);
-    }
-    function showAge(){ toast('Age calculator is ready for the next build.'); }
-    function showUnits(){ toast('Unit converter is ready for the next build.'); }
-    function showSavings(){ toast('Savings planner is ready for the next build.'); }
+    const modal=$('#modal'), modalBody=$('#modalBody'), modalTitle=$('#modalTitle'), modalBadge=$('#modalBadge');
+    const closeModal=()=>{ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); };
+    $('#closeModal').onclick=closeModal;
+    modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
 
+    function openTool(title,badge,body,init){
+      modalTitle.textContent=title; modalBadge.textContent=badge; modalBody.innerHTML=body;
+      modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); if(init) init();
+    }
+
+    function startTimer(){
+      openTool('Focus timer','Productivity',`
+        <div class="timer-display" id="timerDisplay">25:00</div>
+        <div class="hero-actions" style="justify-content:center">
+          <button class="btn primary" id="timerStart">Start</button>
+          <button class="btn" id="timerReset">Reset</button>
+        </div>
+        <p style="color:var(--muted);text-align:center;margin-top:14px">A simple 25-minute session. Keep this tab open.</p>`,
+        ()=>{
+          let left=1500, running=false, id=null;
+          const render=()=>{const m=String(Math.floor(left/60)).padStart(2,'0'),s=String(left%60).padStart(2,'0');$('#timerDisplay').textContent=m+':'+s;};
+          $('#timerStart').onclick=()=>{
+            running=!running; $('#timerStart').textContent=running?'Pause':'Start';
+            if(running){id=setInterval(()=>{left--;render();if(left<=0){clearInterval(id);running=false;$('#timerStart').textContent='Start';toast('Focus session complete.');}},1000);}
+            else if(id) clearInterval(id);
+          };
+          $('#timerReset').onclick=()=>{if(id)clearInterval(id);running=false;left=1500;render();$('#timerStart').textContent='Start';};
+          render();
+        });
+    }
+
+    function showTime(){
+      const zones=['Africa/Addis_Ababa','Europe/London','America/New_York','Asia/Dubai','Asia/Kolkata','Asia/Tokyo'];
+      openTool('World clock','Time',`
+        <div class="field"><label>Compare timezone</label><select id="zoneSel">${zones.map(z=>`<option>${z}</option>`).join('')}</select></div>
+        <div class="big-result" id="timeResult"></div>`,
+        ()=>{
+          const render=()=>{const z=$('#zoneSel').value; const s=new Intl.DateTimeFormat(undefined,{timeZone:z,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true,timeZoneName:'short'}).format(new Date()); $('#timeResult').textContent=s;};
+          $('#zoneSel').value='Europe/London'; $('#zoneSel').onchange=render; render(); window.__dailyKitClock=setInterval(render,30000);
+        });
+    }
+
+    function showAge(){
+      openTool('Age calculator','Personal utility',`
+        <div class="field"><label>Date of birth</label><input id="dob" type="date"></div>
+        <div class="big-result" id="ageResult">Choose your birthday.</div>
+        <p id="birthdayResult" style="color:var(--muted);margin-top:10px"></p>`,
+        ()=>{
+          const d=$('#dob'), now=new Date(); d.max=now.toISOString().slice(0,10);
+          d.oninput=()=>{
+            if(!d.value){$('#ageResult').textContent='Choose your birthday.';return;}
+            const b=new Date(d.value+'T00:00:00'), today=new Date();
+            let y=today.getFullYear()-b.getFullYear(), m=today.getMonth()-b.getMonth(), day=today.getDate()-b.getDate();
+            if(day<0){m--;day+=new Date(today.getFullYear(),today.getMonth(),0).getDate();}
+            if(m<0){y--;m+=12;}
+            $('#ageResult').textContent=`${y} years · ${m} months · ${day} days`;
+            const next=new Date(today.getFullYear(),b.getMonth(),b.getDate()); if(next<today) next.setFullYear(today.getFullYear()+1);
+            const days=Math.ceil((next-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+            $('#birthdayResult').textContent=days===0?'🎂 Birthday today.':`${days} days until your next birthday.`;
+          };
+        });
+    }
+
+    function showUnits(){
+      openTool('Unit converter','Converters',`
+        <div class="row"><div class="field"><label>Type</label><select id="unitType"><option value="length">Length</option><option value="weight">Weight</option><option value="temperature">Temperature</option></select></div><div class="field"><label>Value</label><input id="unitValue" type="number" inputmode="decimal" value="1"></div></div>
+        <div class="row"><div class="field"><label>From</label><select id="unitFrom"></select></div><div class="field"><label>To</label><select id="unitTo"></select></div></div>
+        <div class="big-result" id="unitResult"></div>`,
+        ()=>{
+          const maps={
+            length:{meter:1,kilometer:1000,centimeter:.01,mile:1609.344,foot:.3048,inch:.0254},
+            weight:{kilogram:1,gram:.001,pound:.45359237,ounce:.0283495231},
+            temperature:{celsius:1,fahrenheit:1,kelvin:1}
+          };
+          const fill=()=>{
+            const type=$('#unitType').value, keys=Object.keys(maps[type]);
+            $('#unitFrom').innerHTML=keys.map(k=>`<option>${k}</option>`).join('');
+            $('#unitTo').innerHTML=keys.map(k=>`<option>${k}</option>`).join('');
+            $('#unitTo').value=keys[1]||keys[0]; render();
+          };
+          const render=()=>{
+            const type=$('#unitType').value,v=+$('#unitValue').value||0,from=$('#unitFrom').value,to=$('#unitTo').value;
+            let out;
+            if(type==='temperature'){
+              let c=from==='celsius'?v:from==='fahrenheit'?(v-32)*5/9:v-273.15;
+              out=to==='celsius'?c:to==='fahrenheit'?c*9/5+32:c+273.15;
+            }else out=v*maps[type][from]/maps[type][to];
+            $('#unitResult').textContent=`${money(v)} ${from} = ${money(out)} ${to}`;
+          };
+          ['unitType','unitValue','unitFrom','unitTo'].forEach(id=>$('#'+id).addEventListener('input',id==='unitType'?fill:render));
+          fill();
+        });
+    }
+
+    function showSavings(){
+      openTool('Savings goal','Money planning',`
+        <div class="row"><div class="field"><label>Target</label><input id="saveTarget" type="number" inputmode="decimal" value="10000"></div><div class="field"><label>Already saved</label><input id="saveHave" type="number" inputmode="decimal" value="2000"></div></div>
+        <div class="field"><label>Months</label><input id="saveMonths" type="number" inputmode="numeric" min="1" value="12"></div>
+        <div class="big-result" id="saveResult"></div>
+        <p style="color:var(--muted);margin-top:10px">This is a simple arithmetic planner, not financial advice.</p>`,
+        ()=>{
+          const render=()=>{const t=Math.max(0,+$('#saveTarget').value||0),h=Math.max(0,+$('#saveHave').value||0),m=Math.max(1,+$('#saveMonths').value||1); $('#saveResult').textContent=`Save ${money(Math.max(0,t-h)/m)} per month`;};
+          ['saveTarget','saveHave','saveMonths'].forEach(id=>$('#'+id).addEventListener('input',render)); render();
+        });
+    }
+
+    window.addEventListener('beforeunload',()=>{if(window.__dailyKitClock)clearInterval(window.__dailyKitClock);});
     calcPct(); calcSplit();
   </script>
 </body>
