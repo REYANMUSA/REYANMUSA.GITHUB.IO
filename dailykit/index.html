@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="DailyKit — simple everyday tools for money, time, numbers and productivity. Fast, private and free.">
+  <title>DailyKit — everyday tools, without the clutter</title>
+  <style>
+    :root{
+      --bg:#f7f7f4;--card:#fff;--ink:#181a18;--muted:#6b716b;--line:#e4e7e1;
+      --accent:#718a73;--accent-2:#e8efe8;--shadow:0 16px 44px rgba(20,25,20,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1120px,calc(100% - 28px));margin:auto}
+    header{position:sticky;top:0;z-index:10;background:rgba(247,247,244,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(228,231,225,.8)}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.4px}
+    .logo{width:36px;height:36px;border-radius:12px;background:var(--ink);color:white;display:grid;place-items:center;font-weight:900}
+    .navlinks{display:flex;gap:6px}
+    .navlinks a{padding:9px 12px;border-radius:10px;color:var(--muted)}
+    .navlinks a:hover{background:#ecefe9;color:var(--ink)}
+    main{padding:38px 0 70px}
+    .hero{display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:stretch}
+    .hero-copy{padding:28px 0 12px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.12em}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--accent)}
+    h1{font-size:clamp(42px,6.2vw,72px);line-height:.98;letter-spacing:-.065em;margin:16px 0 18px;max-width:720px}
+    .hero p{font-size:18px;color:var(--muted);max-width:650px;margin:0 0 24px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+    .btn{border:1px solid var(--line);background:white;padding:12px 16px;border-radius:13px;font-weight:750}
+    .btn.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+    .btn:hover{transform:translateY(-1px)}
+    .daily-card{background:var(--ink);color:white;border-radius:28px;padding:24px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between;min-height:286px}
+    .daily-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .mini-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#b6bdb6;font-weight:800}
+    .date{font-size:13px;color:#cfd5cf;margin-top:5px}
+    .quote{font-size:25px;line-height:1.15;letter-spacing:-.03em;margin:22px 0}
+    .checkin{display:flex;gap:8px;align-items:center}
+    .checkin input{flex:1;background:#292c29;border:1px solid #3c403c;color:white;border-radius:12px;padding:11px 12px;outline:none}
+    .checkin button{border:0;background:white;color:var(--ink);border-radius:12px;padding:11px 14px;font-weight:800}
+    .adslot{margin:28px 0;border:1px dashed #cfd5ce;background:#fbfbf8;border-radius:18px;padding:14px;text-align:center;color:#8a918a;font-size:12px}
+    .adslot strong{display:block;color:#656c65;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+    section{margin-top:42px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:15px}
+    h2{font-size:25px;letter-spacing:-.035em;margin:0}
+    .section-head p{margin:0;color:var(--muted);font-size:13px}
+    .search{width:100%;border:1px solid var(--line);background:white;border-radius:15px;padding:13px 15px;outline:none;margin-bottom:16px}
+    .search:focus{border-color:#c3cec4;box-shadow:0 0 0 4px #eaf0ea}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+    .tool{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;min-height:154px;display:flex;flex-direction:column;justify-content:space-between;transition:.15s}
+    .tool:hover{box-shadow:0 12px 30px rgba(20,25,20,.06);transform:translateY(-2px)}
+    .icon{width:40px;height:40px;border-radius:13px;background:var(--accent-2);display:grid;place-items:center;font-weight:900;color:#526b54}
+    .tool h3{font-size:16px;margin:13px 0 2px}
+    .tool p{color:var(--muted);font-size:12px;margin:0}
+    .tool button{margin-top:10px;border:0;background:none;text-align:left;padding:0;font-weight:800;color:#516b53}
+    .tool.offline{position:relative}
+    .badge{font-size:10px;padding:4px 7px;border-radius:999px;background:#f0f1ee;color:#6e746e;display:inline-block}
+    .feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .feature{background:white;border:1px solid var(--line);border-radius:23px;padding:21px}
+    .feature h3{margin:11px 0 6px;font-size:20px}
+    .feature p{margin:0;color:var(--muted)}
+    .form{display:grid;gap:10px;margin-top:15px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .field{display:grid;gap:5px}
+    label{font-size:11px;font-weight:800;color:#666d66;text-transform:uppercase;letter-spacing:.08em}
+    input,select{width:100%;border:1px solid var(--line);background:#fbfbf8;border-radius:12px;padding:11px;outline:none}
+    .result{padding:13px 14px;background:var(--accent-2);border-radius:12px;font-weight:800;margin-top:2px}
+    .sponsor{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+    .sponsor small{color:var(--muted)}
+    .footer{border-top:1px solid var(--line);margin-top:48px;padding:24px 0 10px;color:var(--muted);font-size:12px}
+    .footerline{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+    .toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:white;padding:11px 14px;border-radius:12px;font-weight:700;transition:.2s;z-index:50}
+    .toast.show{transform:translate(-50%,0);opacity:1}
+    @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:600px){
+      .wrap{width:min(100% - 20px,1120px)}.nav{height:60px}.navlinks{display:none}main{padding-top:20px}
+      h1{font-size:48px}.hero p{font-size:16px}.grid,.feature-grid{grid-template-columns:1fr 1fr}.tool{min-height:142px;padding:15px}
+      .row,.sponsor{grid-template-columns:1fr}.daily-card{min-height:260px}
+    }
+    @media(max-width:390px){.grid{grid-template-columns:1fr}.hero-actions{display:grid}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top"><span class="logo">D</span><span>DailyKit</span></a>
+      <nav class="navlinks" aria-label="Main">
+        <a href="#tools">Tools</a><a href="#money">Money</a><a href="#about">Why</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="wrap">
+      <div class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="dot"></span>Free everyday utilities</div>
+          <h1>Small tools.<br>Big time savings.</h1>
+          <p>Calculate, convert, plan and check things without creating an account or digging through a bloated app.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#tools">Explore tools</a>
+            <button class="btn" id="focusBtn">Set today's focus</button>
+          </div>
+        </div>
+        <aside class="daily-card">
+          <div class="daily-top">
+            <div><div class="mini-label">Your day</div><div class="date" id="today"></div></div>
+            <span class="badge">Saved on device</span>
+          </div>
+          <div class="quote" id="focusText">What would make today feel useful?</div>
+          <div class="checkin">
+            <input id="focusInput" maxlength="70" placeholder="e.g. Finish my assignment">
+            <button id="saveFocus">Save</button>
+          </div>
+        </aside>
+      </div>
+
+      <div class="adslot" aria-label="Advertising placeholder">
+        <strong>Ad space</strong>
+        This slot is ready for an approved ad network such as AdSense. No ads are loaded in this demo.
+      </div>
+
+      <section id="tools">
+        <div class="section-head">
+          <div><h2>Tools people actually use</h2><p>No login. Fast on phone.</p></div>
+        </div>
+        <input class="search" id="search" placeholder="Search tools — percentage, age, words, units..." aria-label="Search tools">
+        <div class="grid" id="toolGrid">
+          <article class="tool" data-name="percentage calculator">
+            <div><div class="icon">%</div><h3>Percentage</h3><p>Find a percentage of a number instantly.</p></div>
+            <button data-open="percentage">Open calculator →</button>
+          </article>
+          <article class="tool" data-name="split bill tip calculator">
+            <div><div class="icon">÷</div><h3>Split a bill</h3><p>Split a bill and tip between people.</p></div>
+            <button data-open="split">Open calculator →</button>
+          </article>
+          <article class="tool" data-name="age calculator birthday countdown">
+            <div><div class="icon">⌛</div><h3>Age</h3><p>Calculate your exact age and next birthday.</p></div>
+            <button data-open="age">Open calculator →</button>
+          </article>
+          <article class="tool" data-name="unit converter length weight temperature">
+            <div><div class="icon">↕</div><h3>Units</h3><p>Convert length, weight and temperature.</p></div>
+            <button data-open="units">Open converter →</button>
+          </article>
+          <article class="tool" data-name="word counter character counter">
+            <div><div class="icon">Aa</div><h3>Word count</h3><p>Count words, characters and reading time.</p></div>
+            <button data-open="words">Open counter →</button>
+          </article>
+          <article class="tool" data-name="savings calculator money goal">
+            <div><div class="icon">$</div><h3>Save a goal</h3><p>See what you need to save each month.</p></div>
+            <button data-open="savings">Open calculator →</button>
+          </article>
+          <article class="tool" data-name="time zone local time">
+            <div><div class="icon">◷</div><h3>Local time</h3><p>See your device time and compare another zone.</p></div>
+            <button data-open="time">Open tool →</button>
+          </article>
+          <article class="tool" data-name="focus timer pomodoro productivity">
+            <div><div class="icon">25</div><h3>Focus timer</h3><p>Start a simple 25-minute focus session.</p></div>
+            <button data-open="timer">Start timer →</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="money">
+        <div class="section-head"><div><h2>Money corner</h2><p>Simple planning, not financial advice.</p></div></div>
+        <div class="feature-grid">
+          <div class="feature" id="percentage">
+            <span class="badge">Quick calculator</span>
+            <h3>Percentage of a number</h3>
+            <p>Useful for discounts, marks, growth, fees and everyday math.</p>
+            <div class="form">
+              <div class="row"><div class="field"><label>Percent</label><input id="pct" type="number" inputmode="decimal" value="15"></div><div class="field"><label>Number</label><input id="pctNum" type="number" inputmode="decimal" value="200"></div></div>
+              <div class="result" id="pctResult">15% of 200 = 30</div>
+            </div>
+          </div>
+          <div class="feature" id="split">
+            <span class="badge">Quick calculator</span>
+            <h3>Split a bill</h3>
+            <p>Know the total per person before everyone reaches for a phone calculator.</p>
+            <div class="form">
+              <div class="row"><div class="field"><label>Bill</label><input id="bill" type="number" inputmode="decimal" value="1000"></div><div class="field"><label>People</label><input id="people" type="number" inputmode="numeric" value="4" min="1"></div></div>
+              <div class="row"><div class="field"><label>Tip %</label><input id="tip" type="number" inputmode="decimal" value="10"></div><div class="result" id="splitResult">Each person pays 275</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="adslot">
+        <strong>Sponsored / affiliate space</strong>
+        Built to support future partner recommendations without burying the actual tools.
+      </div>
+
+      <section id="about">
+        <div class="feature sponsor">
+          <div><span class="badge">The business model</span><h3>Useful first. Monetized second.</h3><p>DailyKit is designed around repeat-use tools. Later, approved display ads can occupy the marked slots, while genuinely useful product/service recommendations can live here as affiliate placements.</p></div>
+          <a class="btn" href="#tools">Use the tools</a>
+        </div>
+      </section>
+
+      <section>
+        <div class="feature-grid">
+          <div class="feature" id="advancedPanel">
+            <span class="badge">Word counter</span>
+            <h3>Paste text</h3>
+            <p>Everything runs in your browser; your text is not uploaded anywhere.</p>
+            <div class="form"><textarea id="words" rows="6" style="width:100%;resize:vertical;border:1px solid var(--line);background:#fbfbf8;border-radius:12px;padding:11px;font:inherit" placeholder="Paste or type text..."></textarea><div class="result" id="wordResult">0 words · 0 characters · 0 min reading</div></div>
+          </div>
+          <div class="feature">
+            <span class="badge">Privacy by default</span>
+            <h3>No account needed</h3>
+            <p>Your focus note stays in local storage on this device. The calculators work offline after the page is loaded.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footerline"><span>© 2026 DailyKit. Built as a practical web experiment.</span><span>No medical, legal or financial advice.</span></div>
+      </footer>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = s => document.querySelector(s);
+    const toast = m => { const t=$('#toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); };
+    $('#today').textContent = new Intl.DateTimeFormat(undefined,{weekday:'long',month:'short',day:'numeric',year:'numeric'}).format(new Date());
+
+    const saved = localStorage.getItem('dailykit_focus');
+    if(saved){ $('#focusText').textContent=saved; $('#focusInput').value=saved; }
+    $('#saveFocus').onclick = () => {
+      const v=$('#focusInput').value.trim();
+      if(!v) return toast('Write a focus first.');
+      localStorage.setItem('dailykit_focus',v); $('#focusText').textContent=v; toast('Saved on this device.');
+    };
+    $('#focusBtn').onclick = () => { $('#focusInput').focus(); $('#focusInput').scrollIntoView({behavior:'smooth',block:'center'}); };
+
+    $('#search').addEventListener('input', e => {
+      const q=e.target.value.toLowerCase();
+      document.querySelectorAll('.tool').forEach(x=>x.style.display=x.dataset.name.includes(q)?'flex':'none');
+    });
+
+    const money = n => Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
+    function calcPct(){ const p=+$('#pct').value||0,n=+$('#pctNum').value||0; $('#pctResult').textContent=`${money(p)}% of ${money(n)} = ${money(p*n/100)}`; }
+    function calcSplit(){ const b=+$('#bill').value||0,p=Math.max(1,+$('#people').value||1),t=+$('#tip').value||0; $('#splitResult').textContent=`Each person pays ${money((b*(1+t/100))/p)}`; }
+    ['#pct','#pctNum'].forEach(s=>$(s).addEventListener('input',calcPct));
+    ['#bill','#people','#tip'].forEach(s=>$(s).addEventListener('input',calcSplit));
+    $('#words').addEventListener('input',()=>{
+      const v=$('#words').value.trim(), c=$('#words').value.length, w=v?v.split(/\s+/).length:0;
+      $('#wordResult').textContent=`${w} words · ${c} characters · ${Math.max(0,Math.ceil(w/200))} min reading`;
+    });
+
+    const openMap={percentage:'#percentage',split:'#split',words:'#advancedPanel'};
+    document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{
+      const type=b.dataset.open, target=openMap[type]||'#about';
+      document.querySelector(target).scrollIntoView({behavior:'smooth',block:'start'});
+      if(type==='timer') startTimer();
+      else if(type==='time') showTime();
+      else if(type==='age') showAge();
+      else if(type==='units') showUnits();
+      else if(type==='savings') showSavings();
+      else toast('Tool ready — this demo keeps the core experience simple.');
+    });
+
+    function startTimer(){
+      let left=25*60; toast('25-minute focus started.');
+      const interval=setInterval(()=>{ left--; if(left<=0){clearInterval(interval);toast('Focus session complete.');} },1000);
+    }
+    function showTime(){
+      const zone=Intl.DateTimeFormat().resolvedOptions().timeZone||'your local zone';
+      toast('Your timezone: '+zone);
+    }
+    function showAge(){ toast('Age calculator is ready for the next build.'); }
+    function showUnits(){ toast('Unit converter is ready for the next build.'); }
+    function showSavings(){ toast('Savings planner is ready for the next build.'); }
+
+    calcPct(); calcSplit();
+  </script>
+</body>
+</html>
