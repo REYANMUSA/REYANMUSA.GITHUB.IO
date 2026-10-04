@@ -1,0 +1,9 @@
+{
+  "name": "Nusi Man — Maker & Product Builder",
+  "short_name": "Nusi Man",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5ef",
+  "theme_color": "#11130f",
+  "description": "Nusi Man — independent maker portfolio."
+}
