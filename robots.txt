@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://reyanmusa.github.io/sitemap.xml
